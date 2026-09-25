@@ -14,7 +14,10 @@ The code is currently being prepared for public release. A cleaned, documented, 
 
 If you use this code in your research, please cite:
 
-> Bülte, L., Faber, D., Kaibel, M., Kolbe, B., Mayer, P., Müller, L., Mutzel, P., & Roth, F. (2026). Engineering Metaheuristics for a Visibility Coverage Problem. *Proceedings of the 34th ACM International Conference on Advances in Geographic Information Systems (SIGSPATIAL ’26)*, 5 pages. https://doi.org/10.1145/3841645.3850170
+> Laura Bülte, Daniel Faber, Michael Kaibel, Benedikt Kolbe, Philip Mayer, Lars Müller, Petra Mutzel, and Felix Roth.
+> Engineering Metaheuristics for a Visibility Coverage Problem.
+> In *The 34th ACM International Conference on Advances in Geographic Information Systems (SIGSPATIAL ’26)*, 2026, Riverside, CA, USA. ACM, New York, NY, USA, 4 pages.
+> DOI: https://doi.org/10.1145/3841645.3850170
 
 ## License
 
