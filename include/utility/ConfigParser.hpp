@@ -590,12 +590,13 @@ inline Config parse_final_config(int argc, char** argv)
 
 inline Config parse_args(int argc, char** argv) 
 {
+    std::string placeholder_output = "data/output/<algorithmname>/";
     cxxopts::Options options("GIS CUP 2026 solver", "Code to compute good results for the GIS CUP 2026");
     options.add_options()
         ("i,input_path", "Path to the instance file", 
             cxxopts::value<std::string>()->default_value("data/input/GIS-cup-sample-dataset.geojson"))
         ("o,output_path", "Path to output file", 
-            cxxopts::value<std::string>()->default_value("data/output/debug/"))
+            cxxopts::value<std::string>()->default_value(placeholder_output))
         ("a,algo", "An algorithm chosen from greedy, greedy-boosted, local-search, simulated-annealing, simann-ls-finish", 
             cxxopts::value<std::string>())
         ("k,num_antennas", "Number of antennas in the solution", 
@@ -642,8 +643,15 @@ inline Config parse_args(int argc, char** argv)
     }
 
     cfg.input_path   = result["input_path"].as<std::string>();
-    cfg.output_path  = result["output_path"].as<std::string>();
     cfg.algo_name    = result["algo"].as<std::string>();
+
+    if (result["output_path"].as<std::string>() == placeholder_output){
+        cfg.output_path  = "data/output/" + cfg.algo_name + "/";
+    }
+    else {
+        cfg.output_path  = result["output_path"].as<std::string>();
+    }
+
     cfg.k            = result["k"].as<unsigned>();
     cfg.tau          = result["threshold"].as<double>();
     cfg.time_limit   = result["time-limit"].as<unsigned>() * 60000;

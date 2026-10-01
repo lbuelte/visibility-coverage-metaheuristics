@@ -286,6 +286,12 @@ inline void run_one_seeded(Config const &cfg,
         giscup_solution_logger.log_solution_in_giscup_format(solution);  
         SolutionLogger id_solution_logger(solution_output_path / (solution_identifier + ".solution.ids"));
         id_solution_logger.log_solution_as_antenna_ids_and_serviced_polygons(solution);
+
+        // Visualization
+        if (cfg.visualize) {
+            fs::path visualization_path = cfg.output_path / "visualizations";
+            visualize_solution(solution, visualization_path, solution_identifier + ".solution.visualization");
+        }
     } else {
         std::cerr << "Warning: solution is incorrect for k=" << k << " tau=" << tau << "\n";
     }
@@ -311,17 +317,6 @@ inline void run_one_seeded(Config const &cfg,
                    num_polygons, num_antennas, runtime_instance_ms, runtime_algo_ms,
                    solution.get_number_of_serviced_polygons());
 
-    // Visualization
-    if (cfg.visualize) {
-        std::string const suffix = std::to_string(num_polygons) + "_"
-                                 + std::to_string(k) + "_"
-                                 + std::to_string(static_cast<int>(std::floor(tau * 100)));
-        write_solution(
-            solution.get_antenna_and_arrangement_of_solution(),
-            solution.get_serviced_polygons_with_coverage(),
-            solution.get_unserviced_polygons_with_coverage(),
-            cfg.output_path / ("solution_" + suffix));
-    }
 
     // Solution Analysis
     if (cfg.analyse_solution) {
