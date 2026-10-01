@@ -1,0 +1,65 @@
+# ============================================================
+# Simulated Annealing Configuration
+# ============================================================
+
+output_path = "data/output/simann"
+
+# Allowed values:
+#   Greedy
+#   Random
+initial_sol = "Random"
+
+probability_for_cluster_exchange = 0.005
+
+
+# ============================================================
+# Reheating Parameters
+# ============================================================
+
+# if reheat_amount = 0, there will not be reheating
+reheat_amount = 0.2
+min_reheat_start_progress = 0.8
+max_reheat_start_progress = 0.9
+stagnation_threshold = 600
+
+
+# ============================================================
+# Simulated Annealing Top-K Schedule Parameters
+# ============================================================
+
+interpolation_cutoff_progress = 0.9
+
+[simann_topk.max_num_antennas_to_remove]
+init = 20
+last = 2
+
+[simann_topk.buffer_size_top_r]
+init = 10
+last = 1
+
+[simann_topk.num_samples_for_adding]
+init = 1000
+last = 10000
+
+
+# ============================================================
+# Cluster Exchange Parameters
+# ============================================================
+
+[cluster_exchange]
+
+probability_for_greedy_adding = 0.25
+
+# Allowed values:
+#   ClusterOfRandomAntennaID
+#   RandomCluster
+#   LargestCluster
+#   SmallestClusters
+removal_mode = "SmallestClusters"
+
+# Allowed values:
+#   Greedy
+#   RandomTopKSampling
+#   BestSampling
+#   Random
+adding_mode = "RandomTopKSampling"
