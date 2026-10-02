@@ -6,9 +6,7 @@ This repository contains the supplementary material and C++ code associated with
 
 ## Status
 
-🚧 **Code release in preparation**
-
-The code submitted to the GIS Cup 2026 competition is currently being prepared for public release. A documented version of the implementation, including instructions for compilation and execution, will be made available in this repository.
+🚧 **Code release for solution visualization tool in preparation**
 
 ## Authors
 
