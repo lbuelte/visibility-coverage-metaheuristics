@@ -49,13 +49,12 @@ to load the submodule.
 
 The following libraries are included directly in the submission:
 
-* **GoogleTest**
-* **CGAL 6.0.1**
-* **Catch2**
-* **cxxopts** (`jarro2783/cxxopts`)
-* **nlohmann/json**
+* **CGAL 6.0.1** (`external/libraries/CGAL-6.0.1`)
+* **cxxopts** (`include/jarro2783/cxxopts`)
+* **toml++** (`external/libraries/toml++`)
+* **json.hpp** (`include/nlohmann/json.hpp`)
 
-The header-only libraries `cxxopts.hpp` and `nlohmann/json.hpp` are included directly in the source tree.
+The header-only libraries `jarro2783/cxxopts.hpp` and `nlohmann/json.hpp` are included directly in the source tree.
 
 CGAL 6.0.1 is also bundled and does not need to be installed separately.
 
@@ -426,5 +425,5 @@ The solver uses the deadline to limit the execution time of the final runs. The 
 
 
 ## License
-
-The license information will be added with the public code release.
+All code in this repository, except for the bundeled libraries CGAL, cxxopts, toml++ and json.hpp, are licensed under the MIT License (see `LICENSE`).
+For the licenses of the bundled libraries see their respective files.
