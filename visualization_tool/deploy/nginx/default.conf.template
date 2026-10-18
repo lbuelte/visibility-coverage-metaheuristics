@@ -1,0 +1,102 @@
+# HTTPS termination for the GIS CUP 2026 Solution Viewer.
+#
+# The official nginx image replaces ${DOMAIN} when the container starts.
+# The certificate files in /etc/nginx/tls/ are provided by
+# 40-tls-certificates.sh (a temporary self-signed certificate until Let's
+# Encrypt has issued the real one).
+
+# Per-client limits. The API routes other than chunks run in the app's
+# thread pool (about 40 threads), and a request for a solution whose cache
+# is not built yet holds a thread until the build has finished; a single
+# client must not be able to occupy them all. Chunk routes do not use the
+# thread pool and the viewer requests at most five chunks at once, so they
+# only get a generous connection limit. The limits are per IP address and
+# are sized for a conference network, where a hundred or more users may
+# share one address and open the viewer at the same moment. Clients over
+# a limit receive 429 Too Many Requests.
+limit_conn_zone $binary_remote_addr zone=api_connections:10m;
+limit_conn_zone $binary_remote_addr zone=chunk_connections:10m;
+limit_req_zone $binary_remote_addr zone=api_requests:10m rate=50r/s;
+limit_conn_status 429;
+limit_req_status 429;
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${DOMAIN};
+
+    # HTTP-01 challenge files written by the certbot service.
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # Health check used by compose.yaml; only reachable from inside the
+    # container.
+    location = /healthz {
+        allow 127.0.0.1;
+        allow ::1;
+        deny all;
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name ${DOMAIN};
+
+    ssl_certificate /etc/nginx/tls/fullchain.pem;
+    ssl_certificate_key /etc/nginx/tls/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    # Tile servers such as OpenStreetMap require a Referer; other sites
+    # only see the origin, never the path.
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    # Other sites must not embed the viewer in a frame.
+    add_header Content-Security-Policy "frame-ancestors 'none'" always;
+
+    # The viewer only receives small GET requests.
+    client_max_body_size 1m;
+
+    # Proxy settings for all locations below.
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # The first request for a solution without cache waits until the
+    # cache has been generated, which can take several minutes.
+    proxy_read_timeout 15m;
+    proxy_send_timeout 15m;
+
+    location /api/chunk/ {
+        limit_conn chunk_connections 512;
+        proxy_pass http://app:8000;
+    }
+
+    location /api/ {
+        # Stays below the app's thread pool size.
+        limit_conn api_connections 32;
+        limit_req zone=api_requests burst=1000 nodelay;
+        proxy_pass http://app:8000;
+    }
+
+    location / {
+        proxy_pass http://app:8000;
+    }
+}

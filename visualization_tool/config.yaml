@@ -1,0 +1,102 @@
+app:
+  title: "GIS Cup 2026 Solution Viewer"
+
+map:
+  center: [50.7374, 7.0982]
+  zoom: 14
+  max_zoom: 20
+
+  # OpenStreetMap normally has native raster tiles through zoom 19.
+  # Leaflet enlarges zoom-19 tiles at zoom 20.
+  tile_max_native_zoom: 19
+  
+  tile_url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
+  # Coverage labels are hidden below this Leaflet zoom level.
+  coverage_label_min_zoom: 19
+
+  # Initial opacity of the background tile map, from 0 to 1.
+  background_opacity: 0.4
+
+  # Initial comparison slider position:
+  # 0 means 100% primary, 100 means 100% comparison.
+  overlay_initial_blend: 50
+
+  # Additional zoom levels applied after fitting the complete source.
+  # 0 shows the complete fitted extent; 1 starts one level closer.
+  initial_source_zoom_offset: 1
+
+  # Formatting of the coverage attribute.
+  # For values already expressed from 0 to 100, use multiplier 1.
+  # For values expressed from 0 to 1, use multiplier 100.
+  coverage_label_multiplier: 100
+  coverage_label_decimals: 1
+  coverage_label_suffix: "%"
+
+cache:
+  # Every map layer is split into spatial chunks during preprocessing.
+  # A chunk holds at most this many bytes of uncompressed GeoJSON (only a
+  # single feature that is larger on its own can exceed it). Smaller chunks
+  # mean finer-grained loading but more requests. Changing these values
+  # rebuilds the caches.
+  chunk_max_bytes: 524288
+
+  # Optional per-layer overrides. Coverage labels become one DOM marker
+  # each, so smaller chunks keep the number of markers near the view low.
+  # Layers: source, antennas, covered, uncovered, edges, visibility,
+  # coverage_labels.
+  chunk_max_bytes_by_layer:
+    coverage_labels: 65536
+
+discovery:
+  # Both options default to true.
+  #
+  # true: also offer every source file in data/input (.gpkg, .geojson,
+  # .json) that is not listed under "sources". Its file name becomes the
+  # source ID and label. New files appear after a restart.
+  sources: true
+
+  # true: also offer every algorithm directory in data/output that contains
+  # a "visualizations" directory, and every k and tau found in solution
+  # names; the lists under "parameters" are then optional. New algorithm
+  # directories appear after a restart, new solutions within seconds.
+  solutions: true
+
+# k and tau values offered in the viewer. Without discovered solutions,
+# only solutions with these values can be displayed. A source can set its
+# own values instead (see "sources" below).
+# parameters:
+#   k_values:
+#     - "9"
+#     - "49"
+#     - "484"
+    
+#   tau_values:
+#     - "0.32"
+#     - "0.49"
+#     - "0.68"
+
+sources:
+  - id: "GIS-cup-competition-dataset"
+    label: "GIS Cup Competition 2026"
+    file: "GIS-cup-competition-dataset.geojson"
+
+    # Optional when the desired layer is not the first layer:
+    # layer: "buildings"
+
+    # Optional k and tau values for this source only; each list replaces
+    # the global one under "parameters":
+    parameters:
+      k_values: ["9", "49", "484"]
+      tau_values: ["0.32", "0.49", "0.68"]
+
+algorithms:
+  # Solutions are read from data/output/<directory>/visualizations/.
+  - id: "GISCupBonn_eSA"
+    label: "Extended Simulated Annealing (Bonn)"
+
+    # Optional shorter name for the statistics table; defaults to label.
+    short_label: "eSA (Bonn)"
+
+    directory: "GISCupBonn_eSA"

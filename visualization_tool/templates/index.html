@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
+
+    <meta
+        name="description"
+        content="Interactive display of building visibility solutions"
+    >
+
+    <title>GIS CUP 2026 Solution Viewer</title>
+
+    <!--
+        The SVG for current browsers, the ICO (16 and 32 px) for older
+        ones, and a square PNG for iOS, which rounds the corners itself.
+        All are generated from favicon.svg; raise ?v= after changing them.
+    -->
+    <link
+        rel="icon"
+        href="/static/favicon.ico?v=1"
+        sizes="32x32"
+    >
+
+    <link
+        rel="icon"
+        href="/static/favicon.svg?v=1"
+        type="image/svg+xml"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="/static/apple-touch-icon.png?v=1"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/vendor/leaflet/leaflet.css?v=1.9.4"
+    >
+
+    <link rel="stylesheet" href="/static/styles.css?v=25">
+</head>
+
+<body>
+<div class="app-shell">
+    <header class="topbar">
+        <div class="topbar-main">
+            <div class="brand">
+                <div class="brand-text">
+                    <h1 id="applicationTitle">
+                        GIS Cup 2026
+                        Solution Viewer
+                    </h1>
+                    <span>
+                        <a
+                            href="https://sigspatial2026.sigspatial.org/giscup.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >GIS Cup 2026</a>
+                        solutions
+                        <a
+                            href="https://github.com/lbuelte/visibility-coverage-metaheuristics/tree/main"
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                        >from Bonn, Germany</a>
+                    </span>
+                </div>
+            </div>
+
+            <div
+                class="toolbar"
+                aria-label="Map configuration"
+            >
+                <div class="toolbar-group toolbar-group-selection">
+                    <label class="control control-source">
+                        <span class="control-label">
+                            Source
+                            <span
+                                class="required-mark"
+                                aria-hidden="true"
+                            >
+                                *
+                            </span>
+                        </span>
+
+                        <select
+                            id="sourceSelect"
+                            required
+                            aria-label="Source"
+                        ></select>
+                    </label>
+
+                    <label class="control control-algorithm">
+                        <span class="control-label">
+                            Algorithm
+                        </span>
+
+                        <select
+                            id="algorithmSelect"
+                            aria-label="Primary algorithm"
+                        >
+                            <option value="">
+                                No algorithm
+                            </option>
+                        </select>
+                    </label>
+
+                    <label class="control control-small">
+                        <span class="control-label">k</span>
+
+                        <select
+                            id="kSelect"
+                            aria-label="Value of k"
+                        ></select>
+                    </label>
+
+                    <label class="control control-small">
+                        <span class="control-label">Tau</span>
+
+                        <select
+                            id="tauSelect"
+                            aria-label="Primary value of tau"
+                        ></select>
+                    </label>
+                </div>
+
+                <div class="toolbar-group toolbar-group-view">
+                    <div class="range-control basemap-control">
+                        <div class="range-control-heading">
+                            <label for="backgroundOpacity">
+                                Basemap
+                            </label>
+
+                            <output
+                                id="backgroundOpacityOutput"
+                                for="backgroundOpacity"
+                            >
+                                100%
+                            </output>
+                        </div>
+
+                        <input
+                            id="backgroundOpacity"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            value="100"
+                            aria-label="Background map opacity"
+                        >
+                    </div>
+
+                    <button
+                        id="visibilityToggle"
+                        class="toolbar-button"
+                        type="button"
+                        aria-pressed="false"
+                        disabled
+                    >
+                        Visibility: Off
+                    </button>
+
+                    <button
+                        id="overlayToggle"
+                        class="
+                            toolbar-button
+                            comparison-button
+                        "
+                        type="button"
+                        aria-expanded="false"
+                        aria-controls="overlayPanel"
+                        disabled
+                    >
+                        Compare: Off
+                    </button>
+                </div>
+            </div>
+
+            <div
+                id="status"
+                class="status"
+                data-state="loading"
+                role="status"
+                aria-live="polite"
+            >
+                <span id="statusText" class="status-text">
+                    Loading configuration…
+                </span>
+            </div>
+        </div>
+
+        <section
+            id="overlayPanel"
+            class="overlay-panel"
+            aria-label="Comparison solution"
+            hidden
+        >
+            <div class="overlay-panel-title">
+                <span
+                    class="comparison-swatch"
+                    aria-hidden="true"
+                ></span>
+
+                <div>
+                    <strong>Comparison</strong>
+
+                    <span>
+                        Uses primary source.
+                    </span>
+                </div>
+            </div>
+
+            <label class="control overlay-control">
+                <span class="control-label">
+                    Algorithm
+                </span>
+
+                <select
+                    id="overlayAlgorithmSelect"
+                    aria-label="Comparison algorithm"
+                ></select>
+            </label>
+
+            <label
+                class="
+                    control
+                    overlay-control
+                    overlay-k-control
+                "
+            >
+                <span class="control-label">k</span>
+
+                <select
+                    id="overlayKSelect"
+                    aria-label="Comparison value of k"
+                ></select>
+            </label>
+
+            <label class="control overlay-control">
+                <span class="control-label">Tau</span>
+
+                <select
+                    id="overlayTauSelect"
+                    aria-label="Comparison value of tau"
+                ></select>
+            </label>
+
+            <div class="overlay-fade-group">
+                <div class="fade-control">
+                    <div class="fade-heading">
+                        <span>Solution fade</span>
+
+                        <output
+                            id="fadeOutput"
+                            for="solutionFade"
+                        >
+                            50% primary · 50% comparison
+                        </output>
+                    </div>
+
+                    <div class="fade-slider-row">
+                        <span class="fade-side fade-side-primary">
+                            Primary
+                        </span>
+
+                        <input
+                            id="solutionFade"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            value="50"
+                            aria-label="Comparison solution percentage"
+                        >
+
+                        <span class="fade-side fade-side-comparison">
+                            Comparison
+                        </span>
+                    </div>
+                </div>
+
+                <button
+                    id="closeOverlayButton"
+                    class="overlay-close-button"
+                    type="button"
+                    aria-label="Close comparison"
+                >
+                    Close
+                </button>
+            </div>
+        </section>
+    </header>
+
+    <main class="map-shell">
+        <div
+            id="map"
+            role="application"
+            aria-label="Interactive map"
+        ></div>
+
+        <div
+            class="loading-indicator"
+            aria-hidden="true"
+        >
+            <div class="spinner"></div>
+            <span>Loading map data…</span>
+        </div>
+
+        <aside
+            id="instanceInformation"
+            class="instance-information"
+            aria-label="Instance and solution statistics"
+        >
+            <button
+                id="instanceInformationToggle"
+                class="instance-information-header"
+                type="button"
+                aria-expanded="true"
+                aria-controls="instanceInformationContent"
+            >
+                <span>
+                    <strong id="instanceInformationTitle">
+                        Instance Statistics
+                    </strong>
+
+                    <small
+                        id="instanceInformationSummary"
+                        class="instance-information-summary"
+                    >
+                        Loading statistics…
+                    </small>
+                </span>
+
+                <span
+                    id="instanceInformationChevron"
+                    class="instance-information-chevron"
+                    aria-hidden="true"
+                >
+                    ▼
+                </span>
+            </button>
+
+            <div
+                id="instanceInformationContent"
+                class="instance-information-content"
+            >
+                <div class="instance-source-row">
+                    <span>Source</span>
+
+                    <strong id="instanceSourceName">
+                        —
+                    </strong>
+                </div>
+                <div class="instance-total">
+                    <span>Total instance polygons</span>
+
+                    <strong id="instancePolygonCount">
+                        —
+                    </strong>
+                </div>
+
+                <div class="statistics-table-heading">
+                    Covered polygons by solution
+                </div>
+
+                <div class="statistics-table-wrapper">
+                    <table
+                        id="solutionStatisticsTable"
+                        class="solution-statistics-table"
+                    >
+                        <thead></thead>
+
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Loading statistics…
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p
+                    id="statisticsFootnote"
+                    class="statistics-footnote"
+                    hidden
+                >
+                    * Several runs; best shown.
+                </p>
+            </div>
+        </aside>
+    </main>
+</div>
+
+<noscript>
+    <div class="noscript-message">
+        JavaScript must be enabled to use this application.
+    </div>
+</noscript>
+
+<script
+    src="/static/vendor/leaflet/leaflet.js?v=1.9.4"
+></script>
+
+<script src="/static/chunks.js?v=16"></script>
+
+<script src="/static/app.js?v=28"></script>
+</body>
+</html>

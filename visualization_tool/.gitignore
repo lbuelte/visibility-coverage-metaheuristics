@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+*.so
+
+.venv/
+venv/
+env/
+
+.idea/
+.vscode/
+.DS_Store
+
+# Deployment settings (see deploy/.env.example)
+.env
+
+data/input/*
+!data/input/.gitkeep
+
+data/output/*
+!data/output/.gitkeep
+
+# Kept in the repository so that the directory exists after cloning and
+# belongs to the cloning user; otherwise Docker creates it as root.
+data/cache/*
+!data/cache/.gitkeep
