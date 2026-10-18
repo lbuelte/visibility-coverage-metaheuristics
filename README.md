@@ -423,5 +423,5 @@ The solver uses the deadline to limit the execution time of the final runs. The 
 
 
 ## License
-All code in this repository, except for the bundeled libraries CGAL, cxxopts, toml++ and json.hpp, are licensed under the MIT License (see `LICENSE`).
+All code in this repository, except for the bundeled libraries CGAL, cxxopts, toml++, json.hpp and Leaflet, are licensed under the MIT License (see `LICENSE`).
 For the licenses of the bundled libraries see their respective files.

@@ -3,9 +3,6 @@
 A FastAPI and Leaflet web application for interactively exploring building
 visibility and coverage solutions produced for the [GIS Cup 2026 challenge](https://sigspatial2026.sigspatial.org/giscup.html).
 
-This application is currently available under https://giscup26.fe-roth.de/. 
-Full sources are provided here for self-running/-hosting. 
-
 The viewer supports:
 
 - Source-building outlines.
@@ -27,7 +24,7 @@ The viewer supports:
 - A working GeoPandas/Pyogrio installation.
 - Input and solution files with a defined coordinate reference system (see [below](#solution-directory-layout-and-naming-convention)).
 - Write access to `data/cache`.
-- Internet access for the default OpenStreetMap tiles. Leaflet (the library for rendering) is bundled below `static/vendor/leaflet`.
+- Internet access for the default OpenStreetMap tiles. Leaflet (the library for rendering) is bundled below `static/vendor/leaflet` (BSD 2-Clause, see `static/vendor/leaflet/LICENSE`).
 
 The Python wheels available for common operating systems normally include the
 required native geospatial libraries. If installation fails, ensure that the

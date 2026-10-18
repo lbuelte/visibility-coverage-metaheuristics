@@ -15,12 +15,15 @@ TARGET_ROOT = (
 )
 
 LEAFLET_VERSION = "1.9.4"
-BASE_URL = (
+PACKAGE_URL = (
     f"https://unpkg.com/leaflet@"
-    f"{LEAFLET_VERSION}/dist"
+    f"{LEAFLET_VERSION}"
 )
+BASE_URL = f"{PACKAGE_URL}/dist"
 
 FILES = {
+    # BSD 2-Clause; it must accompany the redistributed files.
+    "LICENSE": f"{PACKAGE_URL}/LICENSE",
     "leaflet.js": f"{BASE_URL}/leaflet.js",
     "leaflet.js.map": (
         f"{BASE_URL}/leaflet.js.map"
