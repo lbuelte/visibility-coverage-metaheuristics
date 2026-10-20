@@ -1,0 +1,87 @@
+# GIS CUP 2026 Solution Viewer behind nginx with HTTPS (Let's Encrypt).
+#
+# Settings come from a .env file next to this file; see .env.example.
+# Relative paths below are resolved from this directory (deploy/).
+#
+#   app      the viewer (FastAPI/Uvicorn), only reachable through nginx
+#   nginx    HTTPS termination on ports 80 and 443
+#   certbot  obtains and renews the Let's Encrypt certificate
+#
+# Run from this directory:
+# Start:  docker compose up -d --build
+# Logs:   docker compose logs -f
+
+name: giscup-viewer
+
+services:
+  app:
+    build: ..
+    image: giscup-viewer:latest
+    restart: unless-stopped
+    # Must be allowed to write to data/cache on the host.
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    # The app needs no privileges and writes only to data/cache.
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      GIS_VIEWER_STARTUP_PRECOMPUTE: "1"
+    volumes:
+      - ../config.yaml:/app/config.yaml:ro
+      - ../data/input:/app/data/input:ro
+      - ../data/output:/app/data/output:ro
+      - ../data/cache:/app/data/cache
+    expose:
+      - "8000"
+    # Lets a running cache build stop at its next checkpoint.
+    stop_grace_period: 30s
+
+  nginx:
+    build: ./nginx
+    image: giscup-viewer-nginx:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - app
+    environment:
+      DOMAIN: "${DOMAIN:?Set DOMAIN in .env}"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - letsencrypt:/etc/letsencrypt:ro
+      - certbot-webroot:/var/www/certbot:ro
+    # Healthy once nginx answers on port 80, where it serves the challenge.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  certbot:
+    image: certbot/certbot:v5.8.0
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      nginx:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/scripts/certbot-loop.sh"]
+    environment:
+      DOMAIN: "${DOMAIN:?Set DOMAIN in .env}"
+      LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL:?Set LETSENCRYPT_EMAIL in .env}"
+      LETSENCRYPT_STAGING: "${LETSENCRYPT_STAGING:-0}"
+    volumes:
+      - ./certbot/certbot-loop.sh:/scripts/certbot-loop.sh:ro
+      - letsencrypt:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+
+volumes:
+  # Certificates and the Let's Encrypt account; keep this volume.
+  letsencrypt:
+  certbot-webroot:

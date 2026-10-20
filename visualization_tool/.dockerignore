@@ -1,0 +1,23 @@
+# Keep the build context small: data is mounted at runtime, not copied.
+.git
+.gitignore
+.claude
+.idea
+.vscode
+.env
+.env.*
+
+venv
+.venv
+env
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+
+data
+deploy
+Dockerfile
+.dockerignore
+README.md
+scripts
