@@ -75,7 +75,6 @@ Testing/
 .venv
 
 # other files
-*.svg
 *.json
 
 # profiling

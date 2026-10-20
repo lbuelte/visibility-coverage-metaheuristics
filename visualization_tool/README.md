@@ -73,7 +73,7 @@ python -m pip install -r requirements.txt
    ```
 
    Alternatively, download the published competition instance and our
-   solutions from Zenodo ([doi:10.5281/zenodo.23055363](https://doi.org/10.5281/zenodo.23055363),
+   solutions from Zenodo ([doi:10.5281/zenodo.23055364](https://doi.org/10.5281/zenodo.23055364),
    CC BY 4.0) into `data/`:
 
    ```bash
