@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     /* ---- Visualization ---- */
     for (auto const &id_solution : id_solutions){
         Solution solution(instance, cfg.k, cfg.tau, id_solution.antenna_ids);
-        visualize_solution(solution, cfg.path_to_logs_and_solutions_parent_folder / "visualization", id_solution.path.stem());
+        visualize_solution(solution, cfg.path_to_logs_and_solutions_parent_folder / "visualizations", id_solution.path.stem().string() + ".visualization");
     }
 
     return 0;
