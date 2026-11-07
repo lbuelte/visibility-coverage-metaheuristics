@@ -5,7 +5,7 @@ This repository contains the C++ solver, configuration files, and web-based solu
 > **Engineering Metaheuristics for a Visibility Coverage Problem.**
 > SIGSPATIAL ’26. https://doi.org/10.1145/3841645.3850170
 
-Our best-found solutions are published on [Zenodo](https://doi.org/10.5281/zenodo.23055364) and can be explored in the [online viewer](https://giscup26.fe-roth.de/).
+Our best-found solutions are published on [Zenodo](https://doi.org/10.5281/zenodo.23055364) and can be explored in the [online viewer](https://giscup.informatik.uni-bonn.de/).
 
 ## Contents
 
@@ -399,7 +399,7 @@ Visualization data for our best-found GIS Cup 2026 solutions for each $(\tau, k)
 
 [`visualization_tool/`](visualization_tool/) contains an interactive web application (FastAPI and Leaflet) for exploring solutions. It shows antenna positions, covered and uncovered buildings, visible edges, visibility regions, and coverage labels. It can overlay two solutions for comparison and shows a statistics table over all algorithms and parameter combinations.
 
-A hosted instance with our competition solutions is available at **https://giscup26.fe-roth.de/**.
+A hosted instance with our competition solutions is available at **https://giscup.informatik.uni-bonn.de/**.
 
 To run the viewer locally (Python 3.11 or newer):
 

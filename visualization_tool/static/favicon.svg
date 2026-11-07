@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- An antenna whose visibility area reaches a covered (green)
+       building, while an uncovered (red) one lies outside it. -->
+  <clipPath id="tile">
+    <rect width="64" height="64" rx="14"/>
+  </clipPath>
+  <rect width="64" height="64" rx="14" fill="#003f70"/>
+  <path d="M17 47 L64 6 L64 52 Z" fill="#ffffff" fill-opacity="0.22" clip-path="url(#tile)"/>
+  <rect x="34.5" y="18.5" width="21" height="21" rx="2.8" fill="#2fbf6a"/>
+  <rect x="9" y="9" width="16" height="16" rx="2.5" fill="#bd363b"/>
+  <circle cx="17" cy="47" r="7" fill="#e0b43c" stroke="#ffffff" stroke-width="2"/>
+</svg>
